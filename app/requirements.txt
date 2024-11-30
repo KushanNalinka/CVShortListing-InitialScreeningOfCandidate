@@ -1,0 +1,7 @@
+Flask
+flask-cors
+PyPDF2
+spacy
+transformers
+torch
+scikit-learntorch
