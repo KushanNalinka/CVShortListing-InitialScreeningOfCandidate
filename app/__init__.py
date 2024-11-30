@@ -7,7 +7,7 @@ client = None
 db = None
 
 def download_model():
-    url = "YOUR_DOWNLOAD_LINK"  # Replace with your cloud file link
+    url = "https://drive.google.com/file/d/1xGKKIC4bAHoiphw7KDzPFN4yHViYqDkW/view?usp=drive_link"  # Replace with your cloud file link
     output_path = "local_model/model.safetensors"
     if not os.path.exists(output_path):  # Download only if the file is missing
         print("Downloading model file...")

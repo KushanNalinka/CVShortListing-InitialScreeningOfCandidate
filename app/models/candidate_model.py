@@ -29,3 +29,7 @@ class Candidate:
         if candidate:
             candidate['_id'] = str(candidate['_id'])
         return candidate
+
+    @staticmethod
+    def update(candidateID, data):
+        candidates_collection.update_one({"_id": ObjectId(candidateID)}, {"$set": data})
