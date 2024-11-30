@@ -6,8 +6,22 @@ from pymongo import MongoClient
 client = None
 db = None
 
+def download_model():
+    url = "YOUR_DOWNLOAD_LINK"  # Replace with your cloud file link
+    output_path = "local_model/model.safetensors"
+    if not os.path.exists(output_path):  # Download only if the file is missing
+        print("Downloading model file...")
+        response = requests.get(url)
+        with open(output_path, "wb") as file:
+            file.write(response.content)
+        print("Download complete.")
+
+
 def create_app():
     global client, db
+
+    # Download the model
+    download_model()
 
     # Initialize Flask app
     app = Flask(__name__)
