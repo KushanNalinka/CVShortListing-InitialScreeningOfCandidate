@@ -5,6 +5,7 @@ import os
 import json
 from collections import Counter
 from app.similarity import calculate_similarity
+from app.utils.chart_utils import get_and_display_chart
 
 candidate_routes = Blueprint('candidates', __name__)
 
@@ -117,4 +118,8 @@ def serve_cv(filename):
 def serve_transcript(filename):
     return send_from_directory(UPLOAD_FOLDER_TRANSCRIPTS, filename)
 
+@candidate_routes.route('/candidates/<candidateID>/chart', methods=['GET'])
+def display_candidate_chart(candidateID):
+    get_and_display_chart(candidateID)
+    return jsonify({"message": "Chart displayed successfully"}), 200
 

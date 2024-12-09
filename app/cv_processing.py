@@ -50,8 +50,39 @@ def extract_soft_skills(cv_text):
                 soft_skills_found.append(label)
     return Counter(soft_skills_found).most_common()
 
+# Define dictionaries for technical skills
+skills_keywords = {
+    'Programming Languages': [
+        'Python', 'Java', 'C', 'C++', 'C#', 'JavaScript', 'TypeScript', 'PHP', 'Ruby', 'Go', 'Swift', 'Kotlin', 'Rust'
+    ],
+    'Frameworks and Libraries': [
+        'React', 'Angular', 'Node.js', 'Django', 'Flask', 'Spring', 'Laravel', 'Vue.js', 'Bootstrap', 'TensorFlow',
+        'Keras', 'PyTorch', 'jQuery', 'Express', 'Next.js', 'Spring Boot', 'Material UI', 'Hibernate', 'FastAPI'
+    ],
+    'Databases': [
+        'MySQL', 'MongoDB', 'PostgreSQL', 'SQLite', 'Oracle', 'SQL Server', 'Firebase', 'DynamoDB', 'Redis'
+    ],
+    'Cloud Platforms': [
+        'AWS', 'Azure', 'Google Cloud', 'Firebase', 'Heroku', 'DigitalOcean', 'Cloudflare', 'IBM Cloud'
+    ],
+    'Tools and Technologies': [
+        'Docker', 'Kubernetes', 'Git', 'GitHub', 'GitLab', 'JIRA', 'Bitbucket', 'Jenkins', 'Ansible', 'Terraform',
+        'CI/CD', 'Serverless', 'Kibana', 'Elasticsearch', 'Logstash', 'Splunk', 'Figma', 'Postman'
+    ],
+    'Development Methodologies': [
+        'Agile', 'Scrum', 'Kanban', 'DevOps', 'Waterfall', 'Test-Driven Development', 'Behavior-Driven Development'
+    ]
+}
+
+# Combine all technical skills into a single list for easier matching
+all_technical_skills = [skill for category in skills_keywords.values() for skill in category]
+
+    
+
 # Function to extract technical skills from project descriptions
 def extract_technical_skills_from_projects(text):
+
+    
     doc = nlp(text.lower())
     extracted_technical_skills = []
     for sentence in doc.sents:
