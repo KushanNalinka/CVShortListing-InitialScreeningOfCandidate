@@ -6,6 +6,11 @@ from transformers import pipeline
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+import random
+
+
+import matplotlib
+matplotlib.use('Agg')  # Use this to prevent Tkinter GUI issues
 
 
 nlp = spacy.load("en_core_web_sm")
@@ -382,3 +387,148 @@ def extract_work_experience(cv_text):
         work_experience.append(current_experience.strip())
 
     return work_experience
+
+# Define keyword categories
+# technology_categories = {
+#     'Databases': ['MySQL', 'MongoDB', 'PostgreSQL', 'SQLite', 'Oracle', 'SQL Server', 'Firebase', 'DynamoDB', 'Redis'],
+#     'Programming Languages': ['Python', 'Java', 'C', 'C++', 'C#', 'JavaScript', 'Ruby', 'Go', 'Swift', 'Kotlin', 'PHP'],
+#     'Frameworks': ['React', 'Angular', 'Django', 'Flask', 'Spring', 'Laravel', 'Vue.js', 'TensorFlow', 'Keras', 'PyTorch'],
+#     'DevOps Tools': ['Docker', 'Kubernetes', 'Git', 'Jenkins', 'Ansible', 'Terraform', 'CI/CD', 'Grafana', 'Prometheus'],
+#     'Cloud Platforms': ['AWS', 'Azure', 'Google Cloud', 'Firebase', 'Heroku', 'DigitalOcean', 'Cloudflare'],
+#     'Version Control': ['Git', 'SVN', 'Bitbucket', 'GitHub', 'GitLab', 'Mercurial'],
+#     'Software Development Methodologies': ['Agile', 'Scrum', 'Kanban', 'Waterfall', 'DevOps', 'TDD', 'BDD'],
+#     'Software Architectures': ['Microservices', 'Monolithic', 'Serverless', 'Event-driven', 'Layered', 'MVC'],
+# }
+
+# # Function to extract technologies and their counts
+# def extract_technologies(text, category):
+#     extracted = []
+#     pattern = re.compile(r'\b(' + '|'.join(map(re.escape, technology_categories[category])) + r')\b', re.IGNORECASE)
+#     matches = pattern.findall(text)
+#     extracted.extend(matches)
+#     return dict(Counter(extracted))
+
+# # Function to generate and return base64-encoded chart
+# def generate_chart(technologies, title):
+#     if not technologies:
+#         return None
+    
+#     labels = list(technologies.keys())
+#     counts = list(technologies.values())
+    
+#     plt.figure(figsize=(10, 6))
+#     plt.barh(labels, counts, color='skyblue')
+#     plt.xlabel('Frequency')
+#     plt.ylabel(title)
+#     plt.title(f'{title} Distribution')
+#     plt.tight_layout()
+    
+#     buffer = BytesIO()
+#     plt.savefig(buffer, format='png')
+#     buffer.seek(0)
+#     plt.close()
+    
+#     return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+# # Function to generate and store all charts
+# def generate_all_charts(cv_text):
+#     charts = {}
+    
+#     for category in technology_categories.keys():
+#         extracted = extract_technologies(cv_text, category)
+#         charts[category] = {
+#             'data': extracted,
+#             'chart': generate_chart(extracted, category)
+#         }
+    
+#     return charts
+
+technology_categories = {
+    'Databases': ['MySQL', 'MongoDB', 'PostgreSQL', 'SQLite', 'Oracle', 'SQL Server', 'Firebase', 'DynamoDB', 'Redis'],
+    'Programming Languages': ['Python', 'Java', 'C', 'C++', 'C#', 'JavaScript', 'Ruby', 'Go', 'Swift', 'Kotlin', 'PHP'],
+    'Frameworks': ['React', 'Angular', 'Django', 'Flask', 'Spring', 'Laravel', 'Vue.js', 'TensorFlow', 'Keras', 'PyTorch'],
+    'DevOps Tools': ['Docker', 'Kubernetes', 'Git', 'Jenkins', 'Ansible', 'Terraform', 'CI/CD', 'Grafana', 'Prometheus'],
+    'Cloud Platforms': ['AWS', 'Azure', 'Google Cloud', 'Firebase', 'Heroku', 'DigitalOcean', 'Cloudflare'],
+    'Version Control': ['Git', 'SVN', 'Bitbucket', 'GitHub', 'GitLab', 'Mercurial'],
+    'Software Development Methodologies': ['Agile', 'Scrum', 'Kanban', 'Waterfall', 'DevOps', 'TDD', 'BDD'],
+    'Software Architectures': ['Microservices', 'Monolithic', 'Serverless', 'Event-driven', 'Layered', 'MVC'],
+}
+
+# Function to extract technologies and their counts
+def extract_technologies(text, category):
+    extracted = {tech: 0 for tech in technology_categories[category]}  # Ensure all technologies are represented
+    pattern = re.compile(r'\b(' + '|'.join(map(re.escape, technology_categories[category])) + r')\b', re.IGNORECASE)
+    matches = pattern.findall(text)
+    counts = Counter(matches)
+    
+    for tech in extracted.keys():
+        extracted[tech] = counts.get(tech, 0)
+    
+    return extracted
+
+# Function to generate and return base64-encoded chart
+def generate_chart(technologies, title):
+    if not technologies:
+        return None
+    
+    labels = list(technologies.keys())
+    counts = list(technologies.values())
+    
+    colors = ["#" + ''.join(random.choices('0123456789ABCDEF', k=6)) for _ in labels]
+    
+    plt.figure(figsize=(12, 6))
+    plt.barh(labels, counts, color=colors)
+    plt.xlabel('Frequency')
+    plt.ylabel(title)
+    plt.title(f'{title} Distribution')
+    plt.xticks(range(max(counts) + 1))
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    plt.close()
+    
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+# Function to generate and store all charts
+def generate_all_charts(cv_text):
+    charts = {}
+    
+    for category in technology_categories.keys():
+        extracted = extract_technologies(cv_text, category)
+        charts[category] = {
+            'data': extracted,
+            'chart': generate_chart(extracted, category)
+        }
+    
+    return charts
+
+def extract_achievements(cv_text):
+    # Common keywords indicating achievements
+    achievement_keywords = [
+        "achievement", "accomplishment", "award", "recognition", "honor", 
+        "certification", "promotion", "patent", "competition", "distinction", 
+        "winner", "finalist", "ranked", "scholarship", "grant", "published", 
+        "best employee", "top performer", "excellence", "successfully led", 
+        "initiated", "implemented"
+    ]
+
+    # Use regex to find sections with achievement-related headings
+    achievement_sections = re.findall(r"(?i)(?:achievements?|awards?|recognitions?|accomplishments?)\s*:\s*(.*?)\n\n", cv_text, re.DOTALL)
+
+    # NLP Processing to analyze sentences and extract relevant ones
+    doc = nlp(cv_text)
+    achievements = []
+    
+    for sent in doc.sents:
+        sentence_text = sent.text.strip()
+        # Check if the sentence contains achievement-related keywords
+        if any(keyword in sentence_text.lower() for keyword in achievement_keywords):
+            achievements.append(sentence_text)
+
+    # Combine regex-extracted and NLP-extracted achievements
+    achievements = list(set(achievements + achievement_sections))
+
+    return achievements
